@@ -1,0 +1,31 @@
+Linux Network Stack Negatif Points
+
+Linux uses an interrupt mechanism: an interrupt is generated several times when a new packet enters the system. 
+The packet then needs to be transferred to the userspace.
+One bottleneck is already apparent: As more packets have to be processed, more resources are consumed, which negatively affects the overall system performance.
+
+As we’ve already said, these packets are saved to specially allocated buffers — more specifically, the sk_buff struct. 
+This struct is allocated for each packet and becomes free when a packet enters the userspace. 
+This operation consumes a lot of bus cycles (i.e. cycles that transfer data from the CPU to the main memory).
+
+Another factor that negatively affects performance is context switching. 
+When an application in the user space needs to send or receive a packet, it executes a system call. 
+The context is switched to kernel mode and then back to user mode. This consumes a significant amount of system resources.
+
+
+How DPDK Works
+
+without DPDK  : Network Controller  <--> Network Driver <--> application
+with DPDK     : Network Controller  <--------------------->  application
+
+
+Ports receiving incoming traffic on network cards need to be unbound from Linux (the kernel driver). 
+This is done using the dpdk_nic_bind (or dpdk-devbind) command, or ./dpdk_nic_bind.py in earlier versions.
+
+
+HUGE PAGES:
+control   : cat /proc/meminfo | grep -i huge
+set size  : echo 2048 | sudo tee /proc/sys/vm/nr_hugepages
+
+AWS:
+ssh -i C:\Users\uguro\Downloads\remote-dev.pem ubuntu@16.171.165.61
