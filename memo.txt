@@ -27,5 +27,9 @@ HUGE PAGES:
 control   : cat /proc/meminfo | grep -i huge
 set size  : echo 2048 | sudo tee /proc/sys/vm/nr_hugepages
 
+
+dpdk-devbind.py --status
+sudo ldconfig
+
 AWS:
 ssh -i C:\Users\uguro\Downloads\remote-dev.pem ubuntu@16.171.165.61
