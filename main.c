@@ -13,12 +13,13 @@
 
 #define RX_RING_SIZE 1024
 #define TX_RING_SIZE 1024
-#define NUM_MBUFS 8191
+#define NUM_MBUFS 8192
 #define MBUF_CACHE_SIZE 250
+#define MBUF_SIZE 2048
 #define BURST_SIZE 32
 
 static const struct rte_eth_conf port_conf_default = {
-    .rxmode = { .max_rx_pkt_len = RTE_ETHER_MAX_LEN }
+    .rxmode = { .max_lro_pkt_size = RTE_ETHER_MAX_LEN }
 };
 
 static int
@@ -62,6 +63,9 @@ int main(int argc, char *argv[]) {
     struct rte_mempool *mbuf_pool;
     uint16_t portid = 0;
 
+    uint32_t src_ip = rte_cpu_to_be_32(0xac1f1b51); // 172.31.27.81 
+    uint32_t dst_ip = rte_cpu_to_be_32(0xc0a80002); // 192.168.0.2
+
     // Initialize the Environment Abstraction Layer (EAL)
     int ret = rte_eal_init(argc, argv);
     if (ret < 0) rte_exit(EXIT_FAILURE, "Error with EAL initialization\n");
@@ -69,10 +73,13 @@ int main(int argc, char *argv[]) {
     // argv += ret;
 
     // Create a new mempool
-    mbuf_pool = rte_pktmbuf_pool_create("MBUF_POOL", NUM_MBUFS * rte_eth_dev_count_avail(),
-                                        MBUF_CACHE_SIZE, 0, RTE_MBUF_DEFAULT_BUF_SIZE, rte_socket_id());
-    if (mbuf_pool == NULL)
+    mbuf_pool = rte_pktmbuf_pool_create("MBUF_POOL", NUM_MBUFS,
+                                        MBUF_CACHE_SIZE, 0, MBUF_SIZE, rte_socket_id());
+    if (mbuf_pool == NULL) {
         rte_exit(EXIT_FAILURE, "Cannot create mbuf pool\n");
+    } else {
+        printf("mbuf created");
+    }
 
     // Initialize all ports
     RTE_ETH_FOREACH_DEV(portid) {
@@ -101,9 +108,9 @@ int main(int argc, char *argv[]) {
                     // Add latency measurement logic
                     uint64_t t1 = rte_rdtsc();
                     // Assuming packets with specific source/destination IP and port for simplicity
-                    if (ipv4_hdr->src_addr == rte_cpu_to_be_32(<SOURCE_IP>) && tcp_hdr->src_port == rte_cpu_to_be_16(<SOURCE_PORT>)) {
+                    if (ipv4_hdr->src_addr == src_ip && tcp_hdr->src_port == rte_cpu_to_be_16(2222)) {
                         // Capture the SYNC message
-                    } else if (ipv4_hdr->src_addr == rte_cpu_to_be_32(<DEST_IP>) && tcp_hdr->src_port == rte_cpu_to_be_16(<DEST_PORT>)) {
+                    } else if (ipv4_hdr->src_addr == dst_ip && tcp_hdr->src_port == rte_cpu_to_be_16(2222)) {
                         // Capture the SYNC-ACK message and calculate time difference
                         uint64_t t2 = rte_rdtsc();
                         uint64_t latency = t2 - t1;
