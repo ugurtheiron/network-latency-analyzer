@@ -1,5 +1,6 @@
 # network-latency-analyzer
 
+[![CI](https://github.com/ugurtheiron/network-latency-analyzer/actions/workflows/ci.yml/badge.svg)](https://github.com/ugurtheiron/network-latency-analyzer/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 An experimental DPDK application that polls a network card from user space and timestamps TCP packets with the CPU cycle counter (`rte_rdtsc`) to measure network latency in CPU cycles.
@@ -13,7 +14,7 @@ The measurement program is `main.c`. It bypasses the Linux kernel network stack 
 1. Initializes the DPDK Environment Abstraction Layer (`rte_eal_init`). Command-line arguments are handed to EAL.
 2. Creates a packet buffer pool (`MBUF_POOL`: 8192 mbufs, per-core cache of 250, 2048-byte buffers).
 3. Configures and starts every available Ethernet port with one RX and one TX queue (1024 descriptors each) and enables promiscuous mode.
-4. Busy-polls RX queue 0 in bursts of up to 32 packets. For each IPv4/TCP packet it reads the timestamp counter and matches on hard-coded addresses: packets from `172.31.27.81:2222` are treated as the request, packets from `192.168.0.2:2222` as the reply, and `Latency: <n> cycles` is printed for the reply.
+4. Busy-polls RX queue 0 of the first successfully initialized port in bursts of up to 32 packets. For each IPv4/TCP packet it reads the timestamp counter and matches on hard-coded addresses: packets from `172.31.27.81:2222` are treated as the request, packets from `192.168.0.2:2222` as the reply, and `Latency: <n> cycles` is printed for the reply.
 5. Frees every packet buffer.
 
 ### Other programs in the repository
@@ -57,9 +58,10 @@ Build and run commands are intentionally not listed here: they have not been ver
 - **`sample.c` does not measure a real RTT.** It reads the timestamp back from the SYN-ACK's own sequence-number field, which belongs to a different packet than the SYN it was stored in.
 - Results are printed as raw timestamp-counter cycles; there is no conversion to time units.
 - The IP addresses and the TCP port (`2222`) are hard-coded; there are no command-line options for them.
+- Only one port is polled: every available port is initialized, but only the first one is read. The program exits if no port could be initialized.
 - Only IPv4/TCP is handled, and packet headers are parsed without length checks.
 - The receive loop runs forever; there is no signal handling or clean shutdown.
-- There are no automated tests and no CI. `test/` is a manual smoke test that needs a working DPDK environment.
+- There are no automated tests; CI only checks that the root target compiles. `test/` is a manual smoke test that needs a working DPDK environment.
 
 ## License
 
