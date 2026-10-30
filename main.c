@@ -62,6 +62,8 @@ port_init(uint16_t port, struct rte_mempool *mbuf_pool) {
 int main(int argc, char *argv[]) {
     struct rte_mempool *mbuf_pool;
     uint16_t portid = 0;
+    uint16_t rx_port = 0; // first successfully initialized port, polled in the main loop
+    int rx_port_ok = 0;
 
     uint32_t src_ip = rte_cpu_to_be_32(0xac1f1b51); // 172.31.27.81 
     uint32_t dst_ip = rte_cpu_to_be_32(0xc0a80002); // 192.168.0.2
@@ -85,12 +87,19 @@ int main(int argc, char *argv[]) {
     RTE_ETH_FOREACH_DEV(portid) {
         if (port_init(portid, mbuf_pool) != 0)
             rte_exit(EXIT_FAILURE, "Cannot init port %"PRIu16 "\n", portid);
+        if (!rx_port_ok) {
+            rx_port = portid;
+            rx_port_ok = 1;
+        }
     }
+
+    if (!rx_port_ok)
+        rte_exit(EXIT_FAILURE, "No Ethernet port could be initialized\n");
 
     // Main processing loop
     while (1) {
         struct rte_mbuf *bufs[BURST_SIZE];
-        const uint16_t nb_rx = rte_eth_rx_burst(portid, 0, bufs, BURST_SIZE);
+        const uint16_t nb_rx = rte_eth_rx_burst(rx_port, 0, bufs, BURST_SIZE);
 
         if (unlikely(nb_rx == 0))
             continue;
