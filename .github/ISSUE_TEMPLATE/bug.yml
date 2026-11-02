@@ -1,0 +1,77 @@
+name: Bug report
+description: Something does not build or does not work as documented
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Please check **Known limitations** in the README first; several behaviors are known, for example the unfinished latency logic in `main.c` and the hard-coded addresses.
+
+        Please do **not** paste real IP addresses, packet captures or credentials from networks you do not own.
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which part of the project is affected?
+      options:
+        - main.c (root build target)
+        - sample.c
+        - test/ (mbuf pool smoke test)
+        - test2/ (main.c variant)
+        - Build (meson.build) or CI
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened instead? Include how you ran the program (EAL arguments, huge page setup, whether the NIC was bound to a DPDK driver).
+    validations:
+      required: true
+  - type: input
+    id: dpdk-version
+    attributes:
+      label: DPDK version
+      description: The output of `pkg-config --modversion libdpdk`, and whether DPDK came from a distribution package or a source build.
+      placeholder: "23.11.1 (Ubuntu package)"
+    validations:
+      required: true
+  - type: input
+    id: nic
+    attributes:
+      label: NIC and driver
+      description: The network card and the DPDK poll-mode driver it uses. Leave empty for build-only problems.
+      placeholder: "Intel X710 / net_i40e, or AWS ENA / net_ena"
+  - type: input
+    id: system
+    attributes:
+      label: OS and kernel
+      description: Distribution and the output of `uname -r`.
+      placeholder: "Ubuntu 24.04, kernel 6.8.0"
+    validations:
+      required: true
+  - type: textarea
+    id: build
+    attributes:
+      label: Build commands
+      description: The exact commands you used to configure and build, and the compiler version if it matters.
+      placeholder: |
+        meson setup build
+        meson compile -C build
+      render: shell
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log output
+      description: Paste the compiler error, EAL output or program output. Remove any real addresses or credentials first.
+      render: text
