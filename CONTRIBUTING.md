@@ -4,7 +4,7 @@ Thanks for taking the time to look at this project. Bug reports, fixes and small
 
 This is an early-stage experiment (see **Known limitations** in the [README](README.md#known-limitations)). Some rough edges are known, for example the hard-coded addresses and the unfinished latency logic, so please check that section before reporting them.
 
-Please do not open public issues for security problems.
+Please do not open public issues for security problems; follow [SECURITY.md](SECURITY.md) instead. Everyone taking part is expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Before you start
 
