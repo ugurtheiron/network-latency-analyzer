@@ -1,0 +1,15 @@
+version: 2
+updates:
+  # DPDK comes from the system packages, so GitHub Actions are the only
+  # dependency Dependabot can update here.
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "ci"
+    # Actions are pinned to major tags, so every update here is a major one.
+    groups:
+      github-actions:
+        patterns:
+          - "*"
