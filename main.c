@@ -107,12 +107,19 @@ int main(int argc, char *argv[]) {
         for (uint16_t i = 0; i < nb_rx; i++) {
             struct rte_mbuf *m = bufs[i];
             struct rte_ether_hdr *eth_hdr = rte_pktmbuf_mtod(m, struct rte_ether_hdr *);
+            const uint16_t data_len = rte_pktmbuf_data_len(m);
 
-            if (eth_hdr->ether_type == rte_be_to_cpu_16(RTE_ETHER_TYPE_IPV4)) {
+            // Frames too short for the Ethernet + IPv4 headers are skipped (and freed below)
+            if (data_len >= sizeof(struct rte_ether_hdr) + sizeof(struct rte_ipv4_hdr) &&
+                eth_hdr->ether_type == rte_be_to_cpu_16(RTE_ETHER_TYPE_IPV4)) {
                 struct rte_ipv4_hdr *ipv4_hdr = (struct rte_ipv4_hdr *)(eth_hdr + 1);
+                const unsigned int ihl_len = (ipv4_hdr->version_ihl & 0x0f) * 4;
 
-                if (ipv4_hdr->next_proto_id == IPPROTO_TCP) {
-                    struct rte_tcp_hdr *tcp_hdr = (struct rte_tcp_hdr *)((unsigned char *)ipv4_hdr + (ipv4_hdr->version_ihl & 0x0f) * 4);
+                // Skip an invalid header length (IHL < 5) or a TCP header that runs past the data
+                if (ipv4_hdr->next_proto_id == IPPROTO_TCP &&
+                    ihl_len >= sizeof(struct rte_ipv4_hdr) &&
+                    sizeof(struct rte_ether_hdr) + ihl_len + sizeof(struct rte_tcp_hdr) <= data_len) {
+                    struct rte_tcp_hdr *tcp_hdr = (struct rte_tcp_hdr *)((unsigned char *)ipv4_hdr + ihl_len);
 
                     // Add latency measurement logic
                     uint64_t t1 = rte_rdtsc();
