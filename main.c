@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
     uint16_t rx_port = 0; // first successfully initialized port, polled in the main loop
     int rx_port_ok = 0;
 
-    uint32_t src_ip = rte_cpu_to_be_32(0xac1f1b51); // 172.31.27.81 
+    uint32_t src_ip = rte_cpu_to_be_32(0xac1f1b51); // 172.31.27.81
     uint32_t dst_ip = rte_cpu_to_be_32(0xc0a80002); // 192.168.0.2
 
     // Initialize the Environment Abstraction Layer (EAL)
