@@ -27,7 +27,7 @@ Running the program additionally needs a Linux host with a network card bound to
 
 ## Build
 
-These are the same two commands the CI workflow runs, from the repository root:
+These are the same two commands the CI workflow runs first, from the repository root:
 
 ```bash
 meson setup build
@@ -38,12 +38,12 @@ The root target is `network_latency_analyzer`, compiled from `main.c`. The `buil
 
 ## Check your change
 
-There is no `meson test` suite and no linter configured. CI only checks that the root target compiles, so before you push:
+There is no `meson test` suite and no linter configured. CI only checks that the root target and the `test/` and `test2/` projects compile, so before you push:
 
 - Make sure the two build commands above succeed without new compiler warnings.
 - If you changed behavior, describe in the pull request how you ran it (DPDK version, NIC and driver, EAL arguments) and what you saw.
 
-`sample.c` is a reference file that is not part of the Meson build. `test/` and `test2/` are separate Meson projects: each has its own `meson.build`, the root `meson.build` does not include them, and CI does not build them. If you touch one of them, configure and build that directory as its own Meson project and say so in the pull request.
+`sample.c` is a reference file that is not part of the Meson build. `test/` and `test2/` are separate Meson projects: each has its own `meson.build`, the root `meson.build` does not include them, and CI configures and builds each one in its own build directory after the root target. If you touch one of them, configure and build that directory as its own Meson project and say so in the pull request.
 
 ## Code style
 

@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
     // Initialize the Environment Abstraction Layer (EAL)
     int ret = rte_eal_init(argc, argv);
     if (ret < 0) rte_exit(EXIT_FAILURE, "Error with EAL initialization\n");
-    
+
     // Adjust argc and argv to remove DPDK-specific arguments
     argc -= ret;
     argv += ret;
