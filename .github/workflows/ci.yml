@@ -24,3 +24,15 @@ jobs:
 
       - name: Build
         run: meson compile -C build
+
+      - name: Configure test project
+        run: meson setup build-test test
+
+      - name: Build test project
+        run: meson compile -C build-test
+
+      - name: Configure test2 project
+        run: meson setup build-test2 test2
+
+      - name: Build test2 project
+        run: meson compile -C build-test2

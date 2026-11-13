@@ -61,7 +61,7 @@ Build and run commands are intentionally not listed here: they have not been ver
 - Only one port is polled: every available port is initialized, but only the first one is read. The program exits if no port could be initialized.
 - Only IPv4/TCP is handled, and packet headers are parsed without length checks.
 - The receive loop runs forever; there is no signal handling or clean shutdown.
-- There are no automated tests; CI only checks that the root target compiles. `test/` is a manual smoke test that needs a working DPDK environment.
+- There are no automated tests; CI only checks that the root target and the `test/` and `test2/` projects compile. `test/` is a manual smoke test that needs a working DPDK environment.
 
 ## License
 
