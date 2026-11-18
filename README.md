@@ -36,7 +36,7 @@ The measurement program is `main.c`. It bypasses the Linux kernel network stack 
 
 The project builds with Meson (`meson.build`). The root target `network_latency_analyzer` is compiled from `main.c` and links DPDK through the `libdpdk` dependency (version `>=23.11`). The `test/` and `test2/` directories carry their own `meson.build` files and are not part of the root build.
 
-Build and run commands are intentionally not listed here: they have not been verified for this repository yet.
+CI builds the root target and the `test/` and `test2/` projects on `ubuntu-latest` on every push to `main` and on every pull request; the build commands are in [CONTRIBUTING.md](CONTRIBUTING.md#build) and in the [CI workflow](.github/workflows/ci.yml). Run commands are intentionally not listed here: running the program needs the DPDK-capable hardware described under [Requirements](#requirements), and no run command has been verified for this repository yet.
 
 ## Project structure
 
@@ -48,6 +48,10 @@ Build and run commands are intentionally not listed here: they have not been ver
 ├── memo.txt        # Study notes: Linux network stack overhead, DPDK, huge pages
 ├── test/           # mbuf pool allocate/free smoke test (own meson.build)
 ├── test2/          # main.c variant that keeps the start timestamp across packets (own meson.build)
+├── .github/        # CI workflow, Dependabot config, issue forms and PR template
+├── CONTRIBUTING.md
+├── CODE_OF_CONDUCT.md
+├── SECURITY.md
 ├── LICENSE
 └── README.md
 ```
